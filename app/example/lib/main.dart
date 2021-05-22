@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static final ThemeData _themeData = ThemeData(
+    fontFamily: 'Montserrat_Medium',
     appBarTheme: const AppBarTheme(
       brightness: Brightness.light,
       centerTitle: true,

@@ -35,43 +35,56 @@ class UsersPage extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index) {
-            final user = snapshot.data![index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final user = snapshot.data![index];
 
-            return GestureDetector(
-              onTap: () {
-                _handlePressed(user, context);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 40,
-                      margin: const EdgeInsets.only(
-                        right: 16,
-                      ),
-                      width: 40,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(20),
+              return GestureDetector(
+                onTap: () {
+                  _handlePressed(user, context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  child: Card(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: 50,
+                            margin: const EdgeInsets.only(
+                              right: 16,
+                            ),
+                            width: 50,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(25),
+                              ),
+                              child: Image.network(
+                                user.avatarUrl ?? '',
+                              ),
+                            ),
+                          ),
                         ),
-                        child: Image.network(
-                          user.avatarUrl ?? '',
+                        Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    Text('${user.firstName} ${user.lastName}'),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );

@@ -12,7 +12,8 @@ except OSError:
 
 
 def create_log(name='app'):
-    name_log_file = os.path.join(ROOT_DIR, f"{logs_dir}\{name}.log")
+    name_log_file = os.path.join(ROOT_DIR, f"{logs_dir}/{name}.log")
+    print(name_log_file)
 
     log = logging.getLogger(name)
     log.setLevel(logging.DEBUG)

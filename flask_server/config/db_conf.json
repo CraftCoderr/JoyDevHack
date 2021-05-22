@@ -4,7 +4,7 @@
         "host": "",
         "dbname": "",
         "user": "api_user",
-        "user_password": "",
+        "user_password": "api_user_pwd",
         "ssh_username": "",
         "ssh_password": ""
       }
@@ -12,11 +12,11 @@
   "local": {
       "api_user": {
         "host": "localhost",
-        "dbname": "",
+        "dbname": "space",
         "user": "api_user",
-        "user_password": "",
+        "user_password": "api_user_pwd",
         "ssh_username": "",
-        "ssh_password": "^"
+        "ssh_password": ""
       }
   }
 }

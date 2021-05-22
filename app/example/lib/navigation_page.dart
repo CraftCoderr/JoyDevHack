@@ -120,7 +120,12 @@ class _NavigationPageState extends State<NavigationPage> {
           IconButton(
             icon: const Icon(Icons.logout),
             color: Theme.of(context).backgroundColor,
-            onPressed: _user == null ? null : logout,
+            onPressed: () {
+              if (_user != null) {
+                logout();
+                Navigator.popUntil(context, ModalRoute.withName('/register'));
+              }
+            },
           ),
         ],
         title: const Text('Space'),

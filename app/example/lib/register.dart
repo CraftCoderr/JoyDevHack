@@ -88,6 +88,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     var success = jsonDecode(response.body)['code'] == null;
 
+    if (success) {
+      await Navigator.pushNamed(context, 'navigation_page');
+    }
+
     setState(() {
       _processing = false;
     });

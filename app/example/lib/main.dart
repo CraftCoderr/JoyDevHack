@@ -1,6 +1,8 @@
 import 'package:example/navigation_page.dart';
+import 'package:example/register.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'rooms.dart';
 
 void main() {
@@ -38,7 +40,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: _themeData,
       // home: const RoomsPage(),
-      home: const NavigationPage(),
+      home: FirebaseChatCore.instance.firebaseUser != null
+          ? const NavigationPage()
+          : const RegisterPage(),
+      routes: {
+        '/navigation_page': (context) => NavigationPage(),
+        '/register': (context) => RegisterPage(),
+      },
     );
   }
 }

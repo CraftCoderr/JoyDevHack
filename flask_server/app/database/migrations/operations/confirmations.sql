@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS operations.confirmations (
-    phone text NOT NULL,
+    phone text UNIQUE NOT NULL,
     sms_code text,
     sms_session text,
     registered_at timestamp with time zone DEFAULT now() NOT NULL

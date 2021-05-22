@@ -1,8 +1,7 @@
 import requests
 import json
 import psycopg2.errors
-from flask_server.app.database.pg_query_handler import result_execute_db_query, result_execute_db_query_dict
-from flask_server.app.database.pg_query_handler import result_json_execute_db_function, result_execute_db_function
+from flask_server.app.database.pg_query_handler import result_execute_db_query
 from flask_server.config.sys_params import SMS_RU_API_KEY, SMS_HASH
 from flask_server.app.controllers.stubs import SMS_ru_stub
 from flask_server.app.tools.file_handler import get_json
@@ -11,7 +10,7 @@ from firebase_admin import auth
 from firebase_admin import credentials
 
 fr_conf = get_json(default_data=None,
-                   absolute_path="E:\\Projects\\JoyDevHack\\flask_server\config\\firebase_credentials.json")
+                   absolute_path="D:\\JoyDevHack\\flask_server\config\\firebase_credentials.json")
 cred = credentials.Certificate(fr_conf)
 firebase_admin.initialize_app(cred)
 
@@ -23,7 +22,8 @@ def login_sms(phone):
     try:
         # generate code for phone
         fun_create_code_for_phone = "SELECT operations.sp_generate_code_for_phone('{}');".format(phone)
-        result = result_execute_db_query(query=fun_create_code_for_phone, fetch='one')['sp_generate_code_for_phone']
+        result = result_execute_db_query(query=fun_create_code_for_phone, fetch='one')[0]
+        print(result)
 
         # if ('sms_code' in result['body']) and ('sms_session' in result['body']):
         #     sms_code = result['body']['sms_code']
@@ -75,16 +75,17 @@ def sms_confirmation(current_phone, sms_code):
 
 def login_user(phone, user_data=None):
     try:
-        query_insert = f"INSERT INTO operations.users (phone) VALUES ({phone});"
+        new_user = auth.create_user(phone_number=f'+{phone}')
+        
+        query_insert = f"INSERT INTO dictionary.users (id, phone) VALUES ('{new_user.uid}', '{phone}');"
         result_execute_db_query(query=query_insert)
-        new_user = auth.create_user(phone_number=phone)
-    except psycopg2.errors.UniqueViolation:
+    except (firebase_admin.auth.PhoneNumberAlreadyExistsError, psycopg2.errors.UniqueViolation):
         pass
     except Exception as ex:
         code = ex.__class__.__name__
         message = ex
         return {'body': None, 'code': code, 'message': message}
     finally:
-        query = f"SELECT * FROM operations.users WHERE phone = '{phone}'"
-        body = dict(result_execute_db_query_dict(query=query, fetch='one'))
+        query = f"SELECT * FROM dictionary.users WHERE phone = '{phone}'"
+        body = dict(result_execute_db_query(query=query, is_dict=True, fetch='one'))
         return {'body': body, 'code': None, 'message': None}

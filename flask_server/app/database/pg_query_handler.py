@@ -33,32 +33,10 @@ def result_execute_db_function(query, db_answer, log_name='app'):
     return db_answer[0]
 
 
-def result_execute_db_query(query, fetch=None, log_name='app'):
+def result_execute_db_query(query, fetch=None, is_dict=False, log_name='app'):
     conn = cursor = ''
     try:
-        conn, cursor = connection.create_db_connection('api_user')
-        fun = strPY_to_strPG(query)
-        cursor.execute(fun)
-        if fetch == 'one':
-            db_answer = cursor.fetchone()
-        elif fetch == 'all':
-            db_answer = cursor.fetchall()
-        else:
-            db_answer = None
-        conn.commit()
-        return db_answer
-    except (Exception, psycopg2.Error) as error:
-        logger.info('from result_execute_db_function exception: {}'.format(str(error)))
-        raise error
-    finally:
-        if (cursor): cursor.close()
-        if (conn): conn.close()
-
-
-def result_execute_db_query_dict(query, fetch=None, log_name='app'):
-    conn = cursor = ''
-    try:
-        conn, cursor = connection.create_db_connection_dict('api_user')
+        conn, cursor = connection.create_db_connection(is_dict=is_dict, user='api_user')
         fun = strPY_to_strPG(query)
         cursor.execute(fun)
         if fetch == 'one':

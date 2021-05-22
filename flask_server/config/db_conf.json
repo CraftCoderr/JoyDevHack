@@ -1,10 +1,11 @@
 {
   "prod": {
       "api_user": {
-        "host": "",
-        "dbname": "",
-        "user": "api_user",
-        "user_password": "api_user_pwd",
+        "host": "city4live.ru",
+        "port": 5431,
+        "dbname": "space",
+        "user": "postgres",
+        "user_password": "postgres",
         "ssh_username": "",
         "ssh_password": ""
       }
@@ -12,6 +13,7 @@
   "local": {
       "api_user": {
         "host": "localhost",
+        "port": 5432,
         "dbname": "space",
         "user": "postgres",
         "user_password": "postgres",

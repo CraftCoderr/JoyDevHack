@@ -1,5 +1,7 @@
 create_schemas.sql
-users.sql
-confirmations.sql
-output_json_fmt.sql
-sp_generate_code_for_phone.sql
+dictionary.users.sql
+operations.confirmations.sql
+private.output_json_fmt.sql
+operations.sp_generate_code_for_phone.sql
+
+seeders.sql

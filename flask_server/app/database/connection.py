@@ -16,30 +16,18 @@ def init_db_conf(server):
 
 
 @default_exception_handler
-def create_db_connection(user):
+def create_db_connection(user, is_dict=False):
     try:
         connection = psycopg2.connect(
             dbname=db_conf[user]['dbname'],
             user=db_conf[user]['user'],
             password=db_conf[user]['user_password'],
-            host=db_conf[user]['host'])
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        return connection, cursor
-    except Exception as ex:
-        print(f"Error: {ex.__class__.__name__}")
-        print(f"Error: {ex}")
-        raise ex
-
-
-@default_exception_handler
-def create_db_connection_dict(user):
-    try:
-        connection = psycopg2.connect(
-            dbname=db_conf[user]['dbname'],
-            user=db_conf[user]['user'],
-            password=db_conf[user]['user_password'],
-            host=db_conf[user]['host'])
-        cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            host=db_conf[user]['host'],
+            port=db_conf[user]['port'])
+        if is_dict:
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        else:
+            cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
         return connection, cursor
     except Exception as ex:
         print(f"Error: {ex.__class__.__name__}")

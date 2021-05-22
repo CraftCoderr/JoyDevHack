@@ -18,6 +18,12 @@ CREATE OR REPLACE FUNCTION operations.sp_generate_code_for_phone(p_phone text)
         VALUES
         (p_phone, v_sms_code, v_sms_session);
 
+        INSERT INTO operations.confirmations(phone, sms_code, sms_session)
+				VALUES (p_phone, v_sms_code, v_sms_session)
+				ON CONFLICT (phone) DO UPDATE SET
+					sms_code = EXCLUDED.sms_code,
+					sms_session = EXCLUDED.sms_session;
+
       v_output_result := jsonb_build_object('phone', p_phone, 'sms_code', v_sms_code, 'sms_session', v_sms_session);
 
     EXCEPTION

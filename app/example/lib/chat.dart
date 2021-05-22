@@ -203,7 +203,10 @@ class _ChatPageState extends State<ChatPage> {
         initialData: const [],
         builder: (context, snapshot) {
           return Chat(
-            theme: DefaultChatTheme(),
+            theme: const DefaultChatTheme(
+              inputBorderRadius:
+                  BorderRadius.vertical(top: Radius.circular(30)),
+            ),
             isAttachmentUploading: _isAttachmentUploading,
             messages: snapshot.data ?? [],
             onAttachmentPressed: _handleAtachmentPress,

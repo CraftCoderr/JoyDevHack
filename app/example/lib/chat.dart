@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:contact_picker/contact_picker.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -31,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (BuildContext context) {
         return SizedBox(
-          height: 180,
+          height: 225,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -53,6 +54,16 @@ class _ChatPageState extends State<ChatPage> {
                 child: const Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Open image picker'),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showContactsPicker();
+                },
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Open contacts picker'),
                 ),
               ),
               TextButton(
@@ -188,6 +199,29 @@ class _ChatPageState extends State<ChatPage> {
       }
     } else {
       // User canceled the picker
+    }
+  }
+
+  _showContactsPicker() async {
+    _setAttachmentUploading(true);
+    try {
+      final _contactPicker = ContactPicker();
+      Contact contact = await _contactPicker.selectContact();
+      print(contact.toString());
+      final message = types.PartialText(
+          text: contact.fullName +
+              "\n" +
+              contact.phoneNumber.label +
+              ": " +
+              contact.phoneNumber.number);
+      FirebaseChatCore.instance.sendMessage(
+        message,
+        widget.roomId,
+      );
+      _setAttachmentUploading(false);
+    } on FirebaseException catch (e) {
+      _setAttachmentUploading(false);
+      print(e);
     }
   }
 

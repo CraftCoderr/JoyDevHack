@@ -86,56 +86,63 @@ class _RoomsPageState extends State<RoomsPage> {
             initialData: const [],
             builder: (context, snapshot) {
               if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.only(
-                    bottom: 200,
-                  ),
-                  child: const Text('No rooms'),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
 
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final room = snapshot.data![index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final room = snapshot.data![index];
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            roomId: room.id,
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                              roomId: room.id,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        child: Card(
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  height: 50,
+                                  margin: const EdgeInsets.only(
+                                    right: 16,
+                                  ),
+                                  width: 50,
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(25),
+                                    ),
+                                    child: Image.network(room.imageUrl ?? ''),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                room.name ?? 'Room',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 40,
-                            margin: const EdgeInsets.only(
-                              right: 16,
-                            ),
-                            width: 40,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                              child: Image.network(room.imageUrl ?? ''),
-                            ),
-                          ),
-                          Text(room.name ?? 'Room'),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           );

@@ -12,11 +12,9 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static final ThemeData _themeData = ThemeData(
+    fontFamily: 'Montserrat_Medium',
     appBarTheme: const AppBarTheme(
       brightness: Brightness.light,
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
       centerTitle: true,
     ),
     primarySwatch: Colors.blue,
@@ -25,6 +23,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,

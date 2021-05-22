@@ -14,9 +14,6 @@ class MyApp extends StatelessWidget {
   static final ThemeData _themeData = ThemeData(
     appBarTheme: const AppBarTheme(
       brightness: Brightness.light,
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
       centerTitle: true,
     ),
     primarySwatch: Colors.blue,

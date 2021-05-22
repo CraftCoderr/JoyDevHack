@@ -57,112 +57,87 @@ class _RoomsPageState extends State<RoomsPage> {
       return Container();
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _user == null
-                ? null
-                : () {
+    return _user == null
+        ? Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(
+              bottom: 200,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Not authenticated'),
+                TextButton(
+                  onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         fullscreenDialog: true,
-                        builder: (context) => const UsersPage(),
+                        builder: (context) => const LoginPage(),
                       ),
                     );
                   },
-          ),
-        ],
-        brightness: Brightness.dark,
-        leading: IconButton(
-          icon: const Icon(Icons.logout),
-          onPressed: _user == null ? null : logout,
-        ),
-        title: const Text('Rooms'),
-      ),
-      body: _user == null
-          ? Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Not authenticated'),
-                  TextButton(
-                    onPressed: () {
+                  child: const Text('Login'),
+                ),
+              ],
+            ),
+          )
+        : StreamBuilder<List<types.Room>>(
+            stream: FirebaseChatCore.instance.rooms(),
+            initialData: const [],
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(
+                    bottom: 200,
+                  ),
+                  child: const Text('No rooms'),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final room = snapshot.data![index];
+
+                  return GestureDetector(
+                    onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          fullscreenDialog: true,
-                          builder: (context) => const LoginPage(),
+                          builder: (context) => ChatPage(
+                            roomId: room.id,
+                          ),
                         ),
                       );
                     },
-                    child: const Text('Login'),
-                  ),
-                ],
-              ),
-            )
-          : StreamBuilder<List<types.Room>>(
-              stream: FirebaseChatCore.instance.rooms(),
-              initialData: const [],
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(
-                      bottom: 200,
-                    ),
-                    child: const Text('No rooms'),
-                  );
-                }
-
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final room = snapshot.data![index];
-
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                              roomId: room.id,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            margin: const EdgeInsets.only(
+                              right: 16,
+                            ),
+                            width: 40,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(20),
+                              ),
+                              child: Image.network(room.imageUrl ?? ''),
                             ),
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              height: 40,
-                              margin: const EdgeInsets.only(
-                                right: 16,
-                              ),
-                              width: 40,
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(20),
-                                ),
-                                child: Image.network(room.imageUrl ?? ''),
-                              ),
-                            ),
-                            Text(room.name ?? 'Room'),
-                          ],
-                        ),
+                          Text(room.name ?? 'Room'),
+                        ],
                       ),
-                    );
-                  },
-                );
-              },
-            ),
-    );
+                    ),
+                  );
+                },
+              );
+            },
+          );
   }
 }

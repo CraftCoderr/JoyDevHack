@@ -21,65 +21,59 @@ class UsersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        title: const Text('Users'),
-      ),
-      body: StreamBuilder<List<types.User>>(
-        stream: FirebaseChatCore.instance.users(),
-        initialData: const [],
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: const Text('No users'),
-            );
-          }
+    return StreamBuilder<List<types.User>>(
+      stream: FirebaseChatCore.instance.users(),
+      initialData: const [],
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(
+              bottom: 200,
+            ),
+            child: const Text('No users'),
+          );
+        }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final user = snapshot.data![index];
+        return ListView.builder(
+          itemCount: snapshot.data!.length,
+          itemBuilder: (context, index) {
+            final user = snapshot.data![index];
 
-              return GestureDetector(
-                onTap: () {
-                  _handlePressed(user, context);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 40,
-                        margin: const EdgeInsets.only(
-                          right: 16,
+            return GestureDetector(
+              onTap: () {
+                _handlePressed(user, context);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 40,
+                      margin: const EdgeInsets.only(
+                        right: 16,
+                      ),
+                      width: 40,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(20),
                         ),
-                        width: 40,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                          child: Image.network(
-                            user.avatarUrl ?? '',
-                          ),
+                        child: Image.network(
+                          user.avatarUrl ?? '',
                         ),
                       ),
-                      Text('${user.firstName} ${user.lastName}'),
-                    ],
-                  ),
+                    ),
+                    Text('${user.firstName} ${user.lastName}'),
+                  ],
                 ),
-              );
-            },
-          );
-        },
-      ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

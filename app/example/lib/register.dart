@@ -7,6 +7,8 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:smart_select/smart_select.dart';
 import 'package:vibration/vibration.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -26,6 +28,9 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController? _countryCodeCtrl;
   TextEditingController? _phoneNumberCtrl;
   bool _verificationSent = false;
+  bool _processing = false;
+  String _phoneNumber = '';
+  String _verificationCode = '';
 
   var countryIndex = 0;
 
@@ -50,51 +55,42 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void _register() async {
+  void _requestSMS() async {
     FocusScope.of(context).unfocus();
 
-    // setState(() {
-    //   _registering = true;
-    // });
+    setState(() {
+      _processing = true;
+    });
 
-    // try {
-    //   final credential =
-    // await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    //     email: _usernameController!.text,
-    //     password: _passwordController!.text,
-    //   );
-    //   await FirebaseChatCore.instance.createUserInFirestore(
-    //     types.User(
-    //       avatarUrl: 'https://i.pravatar.cc/300?u=$_email',
-    //       firstName: _firstName,
-    //       id: credential.user!.uid,
-    //       lastName: _lastName,
-    //     ),
-    //   );
-    //   Navigator.of(context)..pop()..pop();
-    // } catch (e) {
-    //   setState(() {
-    //     _registering = false;
-    //   });
+    var params = {'phone': _phoneNumber};
 
-    //   await showDialog(
-    //     context: context,
-    //     builder: (context) => AlertDialog(
-    //       actions: [
-    //         TextButton(
-    //           onPressed: () {
-    //             Navigator.of(context).pop();
-    //           },
-    //           child: const Text('OK'),
-    //         ),
-    //       ],
-    //       content: Text(
-    //         e.toString(),
-    //       ),
-    //       title: const Text('Error'),
-    //     ),
-    //   );
-    // }
+    var uri = Uri.http('10.0.2.2:5000', '/login/sms', params);
+    var response = await http.get(uri);
+
+    var success = jsonDecode(response.body)['code'] == null;
+
+    setState(() {
+      _verificationSent = success;
+      _processing = false;
+    });
+  }
+
+  void _sendVerification() async {
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _processing = true;
+    });
+
+    var params = {'phone': _phoneNumber, 'sms_code': _verificationCode};
+    var uri = Uri.http('10.0.2.2:5000', '/login/sms_confirmation', params);
+    var response = await http.get(uri);
+
+    var success = jsonDecode(response.body)['code'] == null;
+
+    setState(() {
+      _processing = false;
+    });
   }
 
   @override
@@ -104,147 +100,161 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
-        title: const Text('Register'),
+        title: const Text('Your phone number'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: _verificationSent
-            ? Column(
-                children: [
-                  const SizedBox(height: 160),
-                  const Center(
-                    child: const Text('Code'),
-                  ),
-                  PinFieldAutoFill(
-                    decoration: UnderlineDecoration(
-                      textStyle: const TextStyle(fontSize: 20, color: Colors.black),
-                      colorBuilder:
-                          FixedColorBuilder(Colors.black.withOpacity(0.3)),
-                    ), // UnderlineDecoration, BoxLooseDecoration or BoxTightDecoration see https://github.com/TinoGuo/pin_input_text_field for more info,
-                    currentCode: '', // prefill with a code
-                    onCodeSubmitted: (code) {}, //code submitted callback
-                    onCodeChanged: (code) {
-                      if (code!.length == 6) {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      }
-                    }, //code changed callbac
-                  ),
-                ],
+        child: _processing
+            ? const Center(
+                child: CircularProgressIndicator(),
               )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(height: 8),
-                  Container(
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom:
-                                BorderSide(color: Colors.grey, width: 1.0))),
-                    child: SmartSelect.single(
-                      choiceItems: countries,
-                      title: 'Country',
-                      placeholder: '',
-                      onChange: (state) {
-                        _countryCodeCtrl?.text = state.value.toString();
-                        _focusNode.nextFocus();
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+            : _verificationSent
+                ? Column(
                     children: [
-                      Flexible(
-                        flex: 3,
-                        child: Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: TextField(
-                              controller: _countryCodeCtrl,
-                              style: const TextStyle(height: 1.5),
-                              decoration: const InputDecoration(
-                                  prefixText: '+',
-                                  isDense: true,
-                                  counterText: '',
-                                  hintText: 'code'),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ], // Only num
-                              maxLength: 5,
-                              onChanged: (text) {
-                                if (text.length > 4) {
-                                  var codeSize = 0;
-                                  var found = false;
-                                  var foundIndex = 0;
-                                  for (codeSize = 1;
-                                      codeSize <= text.length;
-                                      codeSize++) {
-                                    final code = text.substring(0, codeSize);
-                                    if (mapping.containsKey(code)) {
-                                      found = true;
-                                      foundIndex = mapping[code] ?? 0;
-                                      break;
-                                    }
-                                  }
-                                  if (found) {
-                                    setState(() {
-                                      countryIndex = foundIndex;
-                                    });
-                                  } else {
-                                    codeSize = 1;
-                                  }
-                                  _countryCodeCtrl?.text =
-                                      text.substring(0, codeSize);
-                                  _focusNode.nextFocus();
-                                  _phoneNumberCtrl?.text =
-                                      text.substring(codeSize);
-                                }
-                              },
-                            )),
+                      const SizedBox(height: 160),
+                      const Center(
+                        child: const Text('Code'),
                       ),
-                      Flexible(
-                          flex: 11,
-                          child: TextField(
-                            controller: _phoneNumberCtrl,
-                            style: const TextStyle(height: 1.5),
-                            decoration: const InputDecoration(
-                                isDense: true,
-                                hintText: '- - -   - - -   - - - -'),
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ], // Only num
-                            onChanged: (text) {
-                              if (text.isEmpty) {
-                                _focusNode.previousFocus();
-                              }
-                            },
-                          )),
+                      PinFieldAutoFill(
+                        decoration: UnderlineDecoration(
+                          textStyle: const TextStyle(
+                              fontSize: 20, color: Colors.black),
+                          colorBuilder:
+                              FixedColorBuilder(Colors.black.withOpacity(0.3)),
+                        ), // UnderlineDecoration, BoxLooseDecoration or BoxTightDecoration see https://github.com/TinoGuo/pin_input_text_field for more info,
+                        currentCode: _verificationCode, // prefill with a code
+                        onCodeSubmitted: (code) {}, //code submitted callback
+                        onCodeChanged: (code) {
+                          if (code!.length == 6) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          } else {
+                            _verificationCode = code;
+                          }
+                        }, //code changed callbac
+                      ),
                     ],
                   )
-                ],
-              ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: const BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    color: Colors.grey, width: 1.0))),
+                        child: SmartSelect.single(
+                          choiceItems: countries,
+                          title: 'Country',
+                          placeholder: '',
+                          onChange: (state) {
+                            _countryCodeCtrl?.text = state.value.toString();
+                            _focusNode.nextFocus();
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Flexible(
+                            flex: 3,
+                            child: Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: TextField(
+                                  controller: _countryCodeCtrl,
+                                  style: const TextStyle(height: 1.5),
+                                  decoration: const InputDecoration(
+                                      prefixText: '+',
+                                      isDense: true,
+                                      counterText: '',
+                                      hintText: 'code'),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly
+                                  ], // Only num
+                                  maxLength: 5,
+                                  onChanged: (text) {
+                                    if (text.length > 4) {
+                                      var codeSize = 0;
+                                      var found = false;
+                                      var foundIndex = 0;
+                                      for (codeSize = 1;
+                                          codeSize <= text.length;
+                                          codeSize++) {
+                                        final code =
+                                            text.substring(0, codeSize);
+                                        if (mapping.containsKey(code)) {
+                                          found = true;
+                                          foundIndex = mapping[code] ?? 0;
+                                          break;
+                                        }
+                                      }
+                                      if (found) {
+                                        setState(() {
+                                          countryIndex = foundIndex;
+                                        });
+                                      } else {
+                                        codeSize = 1;
+                                      }
+                                      _countryCodeCtrl?.text =
+                                          text.substring(0, codeSize);
+                                      _focusNode.nextFocus();
+                                      _phoneNumberCtrl?.text =
+                                          text.substring(codeSize);
+                                    }
+                                  },
+                                )),
+                          ),
+                          Flexible(
+                              flex: 11,
+                              child: TextField(
+                                controller: _phoneNumberCtrl,
+                                style: const TextStyle(height: 1.5),
+                                decoration: const InputDecoration(
+                                    isDense: true,
+                                    hintText: '- - -   - - -   - - - -'),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ], // Only num
+                                onChanged: (text) {
+                                  if (text.isEmpty) {
+                                    _focusNode.previousFocus();
+                                  }
+                                },
+                              )),
+                        ],
+                      )
+                    ],
+                  ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           final phoneNumber =
               (_countryCodeCtrl?.text ?? '') + (_phoneNumberCtrl?.text ?? '');
 
-          if (phoneNumber.length == 11) {
-            // If the form is valid, display a snackbar. In the real world,te
-            // you'd often call a server or save the information in a database.
-            ScaffoldMessenger.of(context)
-                .showSnackBar(const SnackBar(content: Text('Processing Data')));
-            setState(() {
-              _verificationSent = true;
-            });
+          if (_verificationSent) {
+            _sendVerification();
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Invalid phone number!')));
-            Vibration.vibrate();
+            if (phoneNumber.length == 11) {
+              setState(() {
+                _phoneNumber = phoneNumber;
+              });
+
+              _requestSMS();
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invalid phone number!')));
+              Vibration.vibrate();
+            }
           }
         },
-        child: const Icon(Icons.arrow_forward),
+        child: _processing
+            ? const CircularProgressIndicator(
+                // valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
+            : const Icon(Icons.arrow_forward),
       ),
     );
   }

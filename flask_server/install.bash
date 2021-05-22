@@ -58,7 +58,7 @@
   apt-get -y install python3 virtualenv
   virtualenv -p python3 venv
   source venv/bin/activate
-  pip install Flask argparse psycopg2-binary sshtunnel requests
+  pip install Flask argparse psycopg2-binary sshtunnel requests firebase-admin
 
 
 # configuring nginx

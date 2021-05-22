@@ -1,11 +1,19 @@
 import requests
+import json
 import psycopg2.errors
 from flask_server.app.database.pg_query_handler import result_execute_db_query, result_execute_db_query_dict
-import json
 from flask_server.app.database.pg_query_handler import result_json_execute_db_function, result_execute_db_function
 from flask_server.config.sys_params import SMS_RU_API_KEY, SMS_HASH
 from flask_server.app.controllers.stubs import SMS_ru_stub
+from flask_server.app.tools.file_handler import get_json
+import firebase_admin
+from firebase_admin import auth
+from firebase_admin import credentials
 
+fr_conf = get_json(default_data=None,
+                   absolute_path="E:\\Projects\\JoyDevHack\\flask_server\config\\firebase_credentials.json")
+cred = credentials.Certificate(fr_conf)
+firebase_admin.initialize_app(cred)
 
 def login_sms(phone):
     body = None
@@ -69,6 +77,7 @@ def login_user(phone, user_data=None):
     try:
         query_insert = f"INSERT INTO operations.users (phone) VALUES ({phone});"
         result_execute_db_query(query=query_insert)
+        new_user = auth.create_user(phone_number=phone)
     except psycopg2.errors.UniqueViolation:
         pass
     except Exception as ex:

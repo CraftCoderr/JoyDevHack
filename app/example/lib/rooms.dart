@@ -95,7 +95,6 @@ class _RoomsPageState extends State<RoomsPage> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final room = snapshot.data![index];
-
                     return GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
@@ -115,11 +114,12 @@ class _RoomsPageState extends State<RoomsPage> {
                           child: Row(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4, horizontal: 8),
                                 child: Container(
                                   height: 50,
                                   margin: const EdgeInsets.only(
-                                    right: 16,
+                                    right: 14,
                                   ),
                                   width: 50,
                                   child: ClipRRect(

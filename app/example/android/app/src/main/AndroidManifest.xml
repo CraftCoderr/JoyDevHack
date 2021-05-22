@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tm.space">
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
    <application 
         android:usesCleartextTraffic="true"
         android:label="Space"

@@ -55,11 +55,12 @@ class UsersPage extends StatelessWidget {
                     child: Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 8),
                           child: Container(
                             height: 50,
                             margin: const EdgeInsets.only(
-                              right: 16,
+                              right: 14,
                             ),
                             width: 50,
                             child: ClipRRect(

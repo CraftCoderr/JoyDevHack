@@ -41,6 +41,10 @@ dependencies:
   mime: ^1.0.0
   open_file: ^3.2.1
   path_provider: ^2.0.1
+  smart_select:
+    git:
+      url: https://github.com/iktakahiro/flutter_smart_select.git
+      ref: null-safety
 
 dev_dependencies:
   flutter_test:

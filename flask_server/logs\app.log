@@ -1,6 +1,0 @@
-2021-05-20 23:14:54,364 - app - INFO - __init__ - ---------- start app ----------
-2021-05-20 23:16:07,750 - app - INFO - __init__ - ---------- start app ----------
-2021-05-22 13:20:51,612 - app - INFO - __init__ - ---------- start app ----------
-2021-05-22 14:12:13,606 - app - INFO - from result_execute_db_function exception: result_execute_db_function() missing 1 required positional argument: 'log_name'
-2021-05-22 14:12:13,608 - app - ERROR - [TypeError] [GET: /login?login=test&password=test_pwd] Couldn't get json: result_execute_db_function() missing 1 required positional argument: 'log_name'
-2021-05-22 14:14:51,036 - app - INFO - __init__ - ---------- start app ----------

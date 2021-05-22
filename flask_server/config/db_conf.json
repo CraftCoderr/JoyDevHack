@@ -1,0 +1,22 @@
+{
+  "prod": {
+      "api_user": {
+        "host": "",
+        "dbname": "",
+        "user": "api_user",
+        "user_password": "",
+        "ssh_username": "",
+        "ssh_password": ""
+      }
+  },
+  "local": {
+      "api_user": {
+        "host": "localhost",
+        "dbname": "",
+        "user": "api_user",
+        "user_password": "",
+        "ssh_username": "",
+        "ssh_password": "^"
+      }
+  }
+}

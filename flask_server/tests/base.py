@@ -1,5 +1,5 @@
-from tests import logger
-from tests.http import get, post, put
+from flask_server.tests import logger
+from flask_server.tests.http import get, post, put
 
 
 admin_login = 'admin'

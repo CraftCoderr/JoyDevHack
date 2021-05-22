@@ -1,8 +1,8 @@
 from os import path
 import json
-from app import logger
-from config.sys_params import ROOT_DIR
-from app.tools.log_message_halper import log_msg
+from flask_server.app import logger
+from flask_server.config.sys_params import ROOT_DIR
+from flask_server.app.tools.log_message_halper import log_msg
 
 
 #

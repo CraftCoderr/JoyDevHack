@@ -1,7 +1,7 @@
 from flask import request
-from app import flask_app, logger
-from app.tools.log_message_halper import log_request_msg
-from app.tools.system_handler import decorator_request, system_response
+from flask_server.app import flask_app, logger
+from flask_server.app.tools.log_message_halper import log_request_msg
+from flask_server.app.tools.system_handler import decorator_request, system_response
 
 
 def get_json_from_request(required=False):

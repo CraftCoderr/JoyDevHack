@@ -1,4 +1,4 @@
-from tests import logger, client_app
+from flask_server.tests import logger, client_app
 
 
 def decorator_http_query(func):

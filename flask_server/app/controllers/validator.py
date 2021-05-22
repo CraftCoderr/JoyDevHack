@@ -1,1 +1,1 @@
-from app import logger
+from flask_server.app import logger

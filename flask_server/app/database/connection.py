@@ -2,8 +2,8 @@ import psycopg2
 import psycopg2.extras
 import time
 from sshtunnel import SSHTunnelForwarder
-from app.tools.file_handler import get_json
-from app.tools.system_handler import default_exception_handler
+from flask_server.app.tools.file_handler import get_json
+from flask_server.app.tools.system_handler import default_exception_handler
 
 
 db_conf = {}

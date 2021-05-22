@@ -1,5 +1,5 @@
 import argparse
-from config.sys_params import CONFIGURATION_TYPES, DEFAULT_CONFIGURATION
+from flask_server.config.sys_params import CONFIGURATION_TYPES, DEFAULT_CONFIGURATION
 
 
 def create_parser():

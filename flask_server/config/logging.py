@@ -1,6 +1,6 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from config.sys_params import ROOT_DIR
+from flask_server.config.sys_params import ROOT_DIR
 import os
 
 logs_dir = 'logs'

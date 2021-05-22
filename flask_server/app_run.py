@@ -1,9 +1,9 @@
 import sys
 
-from app import logger, flask_app
-from app.database.connection import init_db_conf
-from app.tools.log_message_halper import log_msg
-from app.tools.script_params import create_parser
+from flask_server.app import logger, flask_app
+from flask_server.app.database.connection import init_db_conf
+from flask_server.app.tools.log_message_halper import log_msg
+from flask_server.app.tools.script_params import create_parser
 
 parser = create_parser()
 namespace = parser.parse_args(sys.argv[1:])

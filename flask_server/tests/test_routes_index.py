@@ -1,6 +1,6 @@
 from unittest import TestCase
-from tests import base
-from tests.http import get, post, put
+from flask_server.tests import base
+from flask_server.tests.http import get, post, put
 
 
 class TestIndex(TestCase):

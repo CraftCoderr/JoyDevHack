@@ -1,6 +1,6 @@
-from app import flask_app
-from config.logging import loggers
-from app.database.connection import init_db_conf
+from flask_server.app import flask_app
+from flask_server.config.logging import loggers
+from flask_server.app.database.connection import init_db_conf
 
 
 logger = loggers['test']

@@ -1,6 +1,6 @@
 from functools import wraps
-from app import logger
-from app.tools.log_message_halper import log_msg, log_request_msg
+from flask_server.app import logger
+from flask_server.app.tools.log_message_halper import log_msg, log_request_msg
 from flask import request, Response
 
 

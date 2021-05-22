@@ -2,6 +2,7 @@ from functools import wraps
 from flask_server.app import logger
 from flask_server.app.tools.log_message_halper import log_msg, log_request_msg
 from flask import request, Response
+import json
 
 
 def default_exception_handler(func):
@@ -39,4 +40,6 @@ def decorator_request(func):
 
 def system_response(result='{"result": "The request was processed successfully"}', res_status=200,
                     res_mimetype="application/json;  charset=utf-8"):
+    if isinstance(result, dict) or isinstance(result, list):
+        result = json.dumps(result, indent=4, sort_keys=True, default=str)
     return Response(response=result, status=res_status, mimetype=res_mimetype)

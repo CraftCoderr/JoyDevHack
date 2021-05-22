@@ -29,9 +29,23 @@ def index():
     return system_response(result="Hello world! {}".format(request.url_root))
 
 
+@flask_app.route("/login/sms")
+@decorator_request
+def login_sms():
+    phone = request.args['phone']
+    return system_response(result=user.login_sms(phone))
+
+
+@flask_app.route("/login/sms_confirmation")
+@decorator_request
+def sms_confirmation():
+    sms_code = request.args['sms_code']
+    current_phone = request.args['phone']
+    return system_response(result=user.sms_confirmation(current_phone, sms_code))
+
+
 @flask_app.route("/login")
 @decorator_request
 def login():
-    login = request.args['login']
-    pwd = request.args['password']
-    return system_response(result=user.login_user(login, pwd))
+    phone = request.args['phone']
+    return system_response(result=user.login_user(phone))

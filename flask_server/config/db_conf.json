@@ -13,8 +13,8 @@
       "api_user": {
         "host": "localhost",
         "dbname": "space",
-        "user": "api_user",
-        "user_password": "api_user_pwd",
+        "user": "postgres",
+        "user_password": "postgres",
         "ssh_username": "",
         "ssh_password": ""
       }

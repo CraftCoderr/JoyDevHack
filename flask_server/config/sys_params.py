@@ -4,3 +4,6 @@ CONFIGURATION_TYPES = ['prod', 'local']
 DEFAULT_CONFIGURATION = CONFIGURATION_TYPES[0]
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+
+SMS_RU_API_KEY = '0B06A617-5844-3101-5ED1-BC4265865375'
+SMS_HASH = 'xg62jsy43'

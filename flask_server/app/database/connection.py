@@ -12,17 +12,39 @@ db_conf = {}
 def init_db_conf(server):
     global db_conf
     db_conf = get_json(relative_path='config/db_conf.json', default_data={})[server]
+    print(db_conf)
 
 
 @default_exception_handler
 def create_db_connection(user):
-    connection = psycopg2.connect(
-        dbname=db_conf[user]['dbname'],
-        user=db_conf[user]['user'],
-        password=db_conf[user]['user_password'],
-        host=db_conf[user]['host'])
-    cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    return connection, cursor
+    try:
+        connection = psycopg2.connect(
+            dbname=db_conf[user]['dbname'],
+            user=db_conf[user]['user'],
+            password=db_conf[user]['user_password'],
+            host=db_conf[user]['host'])
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        return connection, cursor
+    except Exception as ex:
+        print(f"Error: {ex.__class__.__name__}")
+        print(f"Error: {ex}")
+        raise ex
+
+
+@default_exception_handler
+def create_db_connection_dict(user):
+    try:
+        connection = psycopg2.connect(
+            dbname=db_conf[user]['dbname'],
+            user=db_conf[user]['user'],
+            password=db_conf[user]['user_password'],
+            host=db_conf[user]['host'])
+        cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        return connection, cursor
+    except Exception as ex:
+        print(f"Error: {ex.__class__.__name__}")
+        print(f"Error: {ex}")
+        raise ex
 
 
 @default_exception_handler

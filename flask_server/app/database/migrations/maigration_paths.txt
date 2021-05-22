@@ -1,2 +1,5 @@
 create_schemas.sql
 users.sql
+confirmations.sql
+output_json_fmt.sql
+sp_generate_code_for_phone.sql

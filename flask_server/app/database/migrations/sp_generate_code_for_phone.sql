@@ -29,9 +29,9 @@ CREATE OR REPLACE FUNCTION operations.sp_generate_code_for_phone(p_phone text)
           v_err_hint = PG_EXCEPTION_HINT;
           v_error_message := ARRAY[v_err_msg_text, v_err_detail, v_err_hint];
     END;
-    RETURN private.output_json_fmt(v_output_result, v_error_code, v_error_message, true, p_transaction_id);
+    RETURN private.output_json_fmt(v_output_result, v_error_code, v_error_message);
   END;
 $$ LANGUAGE plpgsql VOLATILE SECURITY DEFINER;
 
-GRANT EXECUTE ON FUNCTION operations.sp_generate_code_for_phone(uuid, uuid, text) TO api_user;
-REVOKE ALL ON FUNCTION operations.sp_generate_code_for_phone(uuid, uuid, text) FROM public;
+GRANT EXECUTE ON FUNCTION operations.sp_generate_code_for_phone(text) TO postgres;
+REVOKE ALL ON FUNCTION operations.sp_generate_code_for_phone(text) FROM public;

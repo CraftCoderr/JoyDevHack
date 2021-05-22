@@ -10,9 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:translator/translator.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({
+  ChatPage({
     Key? key,
     required this.roomId,
   }) : super(key: key);
@@ -25,6 +26,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
+  final translator = GoogleTranslator();
 
   void _handleAtachmentPress() {
     showModalBottomSheet<void>(
@@ -100,10 +102,13 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
-    FirebaseChatCore.instance.sendMessage(
-      message,
-      widget.roomId,
-    );
+    translator.translate(message.text, from: 'ru', to: 'tr').then((translation) {
+      final translatedMessage = types.PartialText(text: message.text + '\n' + translation.text);
+      FirebaseChatCore.instance.sendMessage(
+        translatedMessage,
+        widget.roomId,
+      );
+    });
   }
 
   void _setAttachmentUploading(bool uploading) {

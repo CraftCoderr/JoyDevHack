@@ -33,6 +33,12 @@ class FirebaseChatCore {
     firebaseUser = types.User(id: id);
   }
 
+  void logoutUser() {
+    final box = Hive.box('auth_box');
+    box.delete('id');
+    firebaseUser = null;
+  }
+
   /// Creates a chat group room with [users]. Creator is automatically
   /// added to the group. [name] is required and will be used as
   /// a group name. Add an optional [imageUrl] that will be a group avatar

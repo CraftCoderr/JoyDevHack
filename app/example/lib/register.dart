@@ -102,7 +102,9 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     if (success) {
-      await Navigator.pushNamed(context, '/navigation_page');
+      // await Navigator.pushNamed(context, '/navigation_page');
+      Navigator.of(context)
+        .pushNamedAndRemoveUntil('/navigation_page', (Route<dynamic> route) => false);
     }
   }
 

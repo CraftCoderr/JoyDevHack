@@ -26,7 +26,7 @@
 // }
 
 // class _AccountNote extends State<AccountNote> {
-//   UserAc? userSelf;
+//   types.User? userSelf;
 //   bool isEditing = false;
 //   bool isAvatarEdited = false;
 //   late String newAvatarPath;

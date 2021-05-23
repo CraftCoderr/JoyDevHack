@@ -124,7 +124,10 @@ class _NavigationPageState extends State<NavigationPage> {
             onPressed: () {
               if (_user != null) {
                 logout();
-                Navigator.popUntil(context, ModalRoute.withName('/register'));
+                // Navigator.pop(context);
+                // Navigator.popUntil(context, ModalRoute.withName('/register'));
+                Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/register', (Route<dynamic> route) => false);
               }
             },
           ),
@@ -138,6 +141,6 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void logout() async {
-    // await FirebaseAuth.instance.signOut();
+    FirebaseChatCore.instance.logoutUser();
   }
 }

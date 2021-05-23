@@ -1,3 +1,4 @@
+import 'package:example/register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -73,7 +74,7 @@ class _RoomsPageState extends State<RoomsPage> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         fullscreenDialog: true,
-                        builder: (context) => const LoginPage(),
+                        builder: (context) => const RegisterPage(),
                       ),
                     );
                   },

@@ -14,7 +14,8 @@ class FirebaseChatCore {
     //   firebaseUser = user;
     // });
     if (box.containsKey('id')) {
-      firebaseUser = types.User(id: box.get('id').toString());
+      var userId = box.get('id').toString();
+      firebaseUser = types.User(id: userId);
     }
   }
 
@@ -27,10 +28,17 @@ class FirebaseChatCore {
   static final FirebaseChatCore instance =
       FirebaseChatCore._privateConstructor();
 
+  void refreshUser() {
+    if (firebaseUser != null) {
+      fetchUser(firebaseUser!.id).then((user) => firebaseUser = user);
+    }
+  }
+
   void updateUser(String id) {
     final box = Hive.box('auth_box');
     box.put('id', id);
     firebaseUser = types.User(id: id);
+    fetchUser(id).then((user) => firebaseUser = user);
   }
 
   void logoutUser() {
@@ -124,6 +132,13 @@ class FirebaseChatCore {
       'avatarUrl': user.avatarUrl,
       'firstName': user.firstName,
       'lastName': user.lastName,
+    });
+  }
+
+  Future<void> updateUserInFireStore(types.User user, String firstName, String lastName) async {
+    await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+      'firstName': firstName,
+      'lastName': lastName,
     });
   }
 

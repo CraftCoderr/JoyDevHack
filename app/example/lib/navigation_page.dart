@@ -1,3 +1,4 @@
+import 'package:example/account_page.dart';
 import 'package:example/rooms.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,6 +35,7 @@ class _NavigationPageState extends State<NavigationPage> {
   void initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
+      FirebaseChatCore.instance.refreshUser();
       // FirebaseAuth.instance.authStateChanges().listen((User? user) {
       //   setState(() {
       //     _user = user;
@@ -67,7 +69,7 @@ class _NavigationPageState extends State<NavigationPage> {
   void _accountState() {
     setState(() {
       _selectedIndexBottomNavigationBar = 2;
-      _currentPage = Container();
+      _currentPage = AccountPage();
     });
   }
 

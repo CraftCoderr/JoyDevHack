@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 /// Provides access to Firebase chat data. Singleton, use
 /// FirebaseChatCore.instance to aceess methods.
 class FirebaseChatCore {
+
   FirebaseChatCore._privateConstructor() {
     var box = Hive.box('auth_box');
     // FirebaseAuth.instance.authStateChanges().listen((User? user) {
@@ -26,6 +27,12 @@ class FirebaseChatCore {
   static final FirebaseChatCore instance =
       FirebaseChatCore._privateConstructor();
 
+  void updateUser(String id) {
+    final box = Hive.box('auth_box');
+    box.put('id', id);
+    firebaseUser = types.User(id: id);
+  }
+
   /// Creates a chat group room with [users]. Creator is automatically
   /// added to the group. [name] is required and will be used as
   /// a group name. Add an optional [imageUrl] that will be a group avatar
@@ -38,8 +45,7 @@ class FirebaseChatCore {
   }) async {
     if (firebaseUser == null) return Future.error('User does not exist');
 
-    final currentUser = await fetchUser(firebaseUser!.id);
-    final roomUsers = [currentUser] + users;
+    final roomUsers = [firebaseUser!] + users;
 
     final room = await FirebaseFirestore.instance.collection('rooms').add({
       'imageUrl': imageUrl,
@@ -87,8 +93,7 @@ class FirebaseChatCore {
       // Create a new room instead
     }
 
-    final currentUser = await fetchUser(firebaseUser!.id);
-    final users = [currentUser, otherUser];
+    final users = [firebaseUser!, otherUser];
 
     final room = await FirebaseFirestore.instance.collection('rooms').add({
       'imageUrl': null,

@@ -18,7 +18,7 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   bool _error = false;
   bool _initialized = false;
-  User? _user;
+  types.User? _user;
   int? _selectedIndexBottomNavigationBar;
   Widget? _currentPage;
 
@@ -34,11 +34,12 @@ class _NavigationPageState extends State<NavigationPage> {
   void initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
-      FirebaseAuth.instance.authStateChanges().listen((User? user) {
-        setState(() {
-          _user = user;
-        });
-      });
+      // FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      //   setState(() {
+      //     _user = user;
+      //   });
+      // });
+      _user = FirebaseChatCore.instance.firebaseUser;
       setState(() {
         _initialized = true;
       });
@@ -137,6 +138,6 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void logout() async {
-    await FirebaseAuth.instance.signOut();
+    // await FirebaseAuth.instance.signOut();
   }
 }

@@ -17,7 +17,7 @@ class RoomsPage extends StatefulWidget {
 class _RoomsPageState extends State<RoomsPage> {
   bool _error = false;
   bool _initialized = false;
-  User? _user;
+  types.User? _user;
 
   @override
   void initState() {
@@ -28,11 +28,12 @@ class _RoomsPageState extends State<RoomsPage> {
   void initializeFlutterFire() async {
     try {
       await Firebase.initializeApp();
-      FirebaseAuth.instance.authStateChanges().listen((User? user) {
-        setState(() {
-          _user = user;
-        });
-      });
+      // FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      //   setState(() {
+      //     _user = user;
+      //   });
+      // });
+      _user = FirebaseChatCore.instance.firebaseUser;
       setState(() {
         _initialized = true;
       });
@@ -44,7 +45,7 @@ class _RoomsPageState extends State<RoomsPage> {
   }
 
   void logout() async {
-    await FirebaseAuth.instance.signOut();
+    // await FirebaseAuth.instance.signOut();
   }
 
   @override

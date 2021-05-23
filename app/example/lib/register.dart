@@ -29,6 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController? _phoneNumberCtrl;
   bool _verificationSent = false;
   bool _processing = false;
+  bool _invalidCode = false;
   String _phoneNumber = '';
   String _verificationCode = '';
 
@@ -83,18 +84,33 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     var params = {'phone': _phoneNumber, 'sms_code': _verificationCode};
-    var uri = Uri.http('city4live.ru:5000', '/login/sms_confirmation', params);
+    var uri = Uri.http('city4live.ru:5000', '/login', params);
     var response = await http.get(uri);
 
-    var success = jsonDecode(response.body)['code'] == null;
+    var json = jsonDecode(response.body);
+    var success = json['code'] == null;
 
     if (success) {
-      await Navigator.pushNamed(context, 'navigation_page');
+      FirebaseChatCore.instance.updateUser(json['body']['id'].toString());
     }
 
     setState(() {
+      if (!success) {
+        _invalidCode = true;
+      }
       _processing = false;
     });
+
+    if (success) {
+      await Navigator.pushNamed(context, '/navigation_page');
+    }
+  }
+
+  Widget _buildError() {
+    return _invalidCode
+        ? const Center(
+            child: Text('Invalid code!', style: TextStyle(color: Colors.red)))
+        : const Text('');
   }
 
   @override
@@ -117,22 +133,25 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       const SizedBox(height: 160),
                       const Center(
-                        child: const Text('Code'),
+                        child: Text('Input verification code'),
                       ),
+                      const SizedBox(height: 16),
+                      _buildError(),
+                      const SizedBox(height: 16),
                       PinFieldAutoFill(
                         decoration: UnderlineDecoration(
                           textStyle: const TextStyle(
                               fontSize: 20, color: Colors.black),
-                          colorBuilder:
-                              FixedColorBuilder(Colors.black.withOpacity(0.3)),
+                          colorBuilder: FixedColorBuilder(_invalidCode
+                              ? Colors.red.withOpacity(0.5)
+                              : Colors.black.withOpacity(0.3)),
                         ), // UnderlineDecoration, BoxLooseDecoration or BoxTightDecoration see https://github.com/TinoGuo/pin_input_text_field for more info,
                         currentCode: _verificationCode, // prefill with a code
                         onCodeSubmitted: (code) {}, //code submitted callback
                         onCodeChanged: (code) {
                           if (code!.length == 6) {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          } else {
                             _verificationCode = code;
+                            FocusScope.of(context).requestFocus(FocusNode());
                           }
                         }, //code changed callbac
                       ),

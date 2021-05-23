@@ -1,12 +1,5 @@
-from functools import wraps
-from flask_server.app import logger
 from flask import request
-
-
-class ValidateError(TypeError):
-    def __init__(self, message="Validate params error"):
-        self.message = message
-        super().__init__(self.message)
+from flask_server.app.controllers.errors import ValidateError
 
 
 def validate(request: request):

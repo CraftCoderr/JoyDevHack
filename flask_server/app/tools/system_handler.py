@@ -5,7 +5,9 @@ from flask import request, Response
 
 from flask_server.app import logger
 from flask_server.app.tools.log_message_halper import log_msg, log_request_msg
-from flask_server.app.controllers.validator import ValidateError, validate
+from flask_server.app.controllers.validator import validate
+from flask_server.app.controllers.errors import TokenExpired, TokenNotFound, ValidateError
+from flask_server.app.database.pg_query_handler import result_execute_db_query
 
 
 def default_exception_handler(func):
@@ -36,6 +38,42 @@ def decorator_request(func):
                 'code': ex.__class__.__name__,
                 'message': ex.message
             }), 402
+        except Exception as ex:
+            logger.error(
+                log_request_msg(
+                    type_msg=ex.__class__.__name__,
+                    msg=str(ex),
+                    source=request
+                )
+            )
+            return system_response({
+                'body': None,
+                'code': ex.__class__.__name__,
+                'message': str(ex)
+            }), 500
+    return _wrapper
+
+
+# декоратор запросов
+def check_token(func):
+    @wraps(func)
+    def _wrapper(*args, **kwargs):
+        try:
+            if 'token' not in request.headers:
+                raise TokenNotFound
+            if result_execute_db_query(
+                query=f"SELECT operations.sp_check_token_expired_at('{request.headers['token']}');",
+                fetch='one',
+                is_dict=False
+            )[0]:
+                raise TokenExpired
+            return func(*args, **kwargs)
+        except (TokenNotFound, TokenExpired) as ex:
+            return system_response(result={
+                'body': None,
+                'code': ex.__class__.__name__,
+                'message': ex.message
+            }), 403
         except Exception as ex:
             logger.error(
                 log_request_msg(

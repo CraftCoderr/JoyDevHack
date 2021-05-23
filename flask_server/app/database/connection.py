@@ -3,7 +3,9 @@ import psycopg2.extras
 import time
 from sshtunnel import SSHTunnelForwarder
 from flask_server.app.tools.file_handler import get_json
-from flask_server.app.tools.system_handler import default_exception_handler
+from flask_server.app import logger
+from functools import wraps
+from flask_server.app.tools.log_message_halper import log_msg
 
 
 db_conf = {}
@@ -12,6 +14,21 @@ db_conf = {}
 def init_db_conf(server):
     global db_conf
     db_conf = get_json(relative_path='config/db_conf.json', default_data={})[server]
+
+
+def default_exception_handler(func):
+    @wraps(func)
+    def _wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as ex:
+            logger.error(log_msg(
+                type_msg=ex.__class__.__name__,
+                msg=str(ex),
+                source=func.__name__)
+            )
+            raise ex
+    return _wrapper
 
 
 @default_exception_handler

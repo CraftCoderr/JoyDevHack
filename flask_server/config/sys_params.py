@@ -7,3 +7,5 @@ ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SMS_RU_API_KEY = '0B06A617-5844-3101-5ED1-BC4265865375'
 SMS_HASH = 'xg62jsy43'
+
+TOKEN_LIVE_TIME = '100 min'

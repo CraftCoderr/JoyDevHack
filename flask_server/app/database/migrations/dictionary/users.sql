@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS dictionary.users (
     name text DEFAULT NULL,
     surname text DEFAULT NULL,
     email text DEFAULT NULL,
-    token text NOT NULL DEFAULT uuid_generate_v1()
+    token text NOT NULL DEFAULT uuid_generate_v1(),
+    token_expired_at timestamp with time zone NOT NULL
 );
 
 COMMENT ON TABLE dictionary.users IS 'Таблица для хранения зарегистрированных пользователей';

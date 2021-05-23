@@ -4,6 +4,7 @@ import psycopg2.errors
 from flask_server.app.database.pg_query_handler import result_execute_db_query
 from flask_server.config.sys_params import SMS_RU_API_KEY, SMS_HASH
 from flask_server.app.controllers.stubs import SMS_ru_stub
+from flask_server.config.sys_params import TOKEN_LIVE_TIME
 
 import firebase_admin
 from firebase_admin import auth
@@ -72,7 +73,7 @@ def login_user(phone, user_data=None):
     try:
         new_user = auth.create_user(phone_number=f'+{phone}')
         
-        query_insert = f"INSERT INTO dictionary.users (id, phone) VALUES ('{new_user.uid}', '{phone}');"
+        query_insert = f"INSERT INTO dictionary.users (id, phone, token_expired_at) VALUES ('{new_user.uid}', '{phone}', now() + interval '{TOKEN_LIVE_TIME}');"
         result_execute_db_query(query=query_insert)
     except (firebase_admin.auth.PhoneNumberAlreadyExistsError, psycopg2.errors.UniqueViolation):
         pass
@@ -82,5 +83,12 @@ def login_user(phone, user_data=None):
         return {'body': None, 'code': code, 'message': message}
     finally:
         query = f"SELECT * FROM dictionary.users WHERE phone = '{phone}'"
-        body = dict(result_execute_db_query(query=query, is_dict=True, fetch='one'))
+        user = result_execute_db_query(query=query, is_dict=True, fetch='one')
+        if user is None:
+            user = auth.get_user_by_phone_number(phone_number=f'+{phone}')
+            query_insert = f"INSERT INTO dictionary.users (id, phone, token_expired_at) VALUES ('{user.uid}', '{phone}', now() + interval '{TOKEN_LIVE_TIME}');"
+            result_execute_db_query(query=query_insert)
+            body = dict(result_execute_db_query(query=query, is_dict=True, fetch='one'))
+        else:
+            body = dict(user)
         return {'body': body, 'code': None, 'message': None}

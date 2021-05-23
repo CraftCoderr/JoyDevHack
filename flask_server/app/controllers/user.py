@@ -23,7 +23,6 @@ def login_sms(phone):
         # generate code for phone
         fun_create_code_for_phone = "SELECT operations.sp_generate_code_for_phone('{}');".format(phone)
         result = result_execute_db_query(query=fun_create_code_for_phone, fetch='one')[0]
-        print(result)
 
         # if ('sms_code' in result['body']) and ('sms_session' in result['body']):
         #     sms_code = result['body']['sms_code']

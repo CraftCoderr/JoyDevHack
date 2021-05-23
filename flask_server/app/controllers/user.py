@@ -21,34 +21,33 @@ def login_sms(phone):
         fun_create_code_for_phone = "SELECT operations.sp_generate_code_for_phone('{}');".format(phone)
         result = result_execute_db_query(query=fun_create_code_for_phone, fetch='one')[0]
 
-        # if ('sms_code' in result['body']) and ('sms_session' in result['body']):
-        #     sms_code = result['body']['sms_code']
-        #     session = result['body']['sms_session']
-        #     api_id = SMS_RU_API_KEY
-        #     hash = SMS_HASH
-        #     msg = '<#>\nВведите проверочный код: {}\n# {}\n{}'.format(sms_code, session, hash)
-        #
-        #     response = requests.get(
-        #         'https://sms.ru/sms/send',
-        #         params={
-        #             'api_id': api_id,
-        #             'to': phone,
-        #             'msg': msg,
-        #             'json': 1
-        #         }
-        #     )
-        #
-        #     body = json.loads(response.text)
-        #     print(body)
-        #
-        #     for sms in body['sms'].values():
-        #         if sms['status'] != 'OK':
-        #             code = sms['status_code']
-        #             message = sms['status_text']
-        # else:
-        #     code = result['code'],
-        #     message = result['message']
-        body = SMS_ru_stub()
+        if ('sms_code' in result['body']) and ('sms_session' in result['body']):
+            sms_code = result['body']['sms_code']
+            session = result['body']['sms_session']
+            api_id = SMS_RU_API_KEY
+            hash = SMS_HASH
+            msg = '<#>\nВведите проверочный код: {}\n# {}\n{}'.format(sms_code, session, hash)
+
+            response = requests.get(
+                'https://sms.ru/sms/send',
+                params={
+                    'api_id': api_id,
+                    'to': phone,
+                    'msg': msg,
+                    'json': 1
+                }
+            )
+
+            body = json.loads(response.text)
+
+            for sms in body['sms'].values():
+                if sms['status'] != 'OK':
+                    code = sms['status_code']
+                    message = sms['status_text']
+        else:
+            code = result['code'],
+            message = result['message']
+        # body = SMS_ru_stub()
     except Exception as e:
         code = type(e).__name__
         message = str(e)
@@ -57,8 +56,7 @@ def login_sms(phone):
 
 
 def sms_confirmation(current_phone, sms_code):
-    check_sms_code = \
-        f"SELECT phone FROM operations.confirmations WHERE sms_code = '{sms_code}';"
+    check_sms_code = f"SELECT phone FROM operations.confirmations WHERE sms_code = '{sms_code}';"
     phone = result_execute_db_query(query=check_sms_code, fetch='one')
 
     if phone is not None and current_phone == phone[0]:
@@ -88,7 +86,7 @@ def login_user(phone, user_data=None):
             user = auth.get_user_by_phone_number(phone_number=f'+{phone}')
             query_insert = f"INSERT INTO dictionary.users (id, phone, token_expired_at) VALUES ('{user.uid}', '{phone}', now() + interval '{TOKEN_LIVE_TIME}');"
             result_execute_db_query(query=query_insert)
-            body = dict(result_execute_db_query(query=query, is_dict=True, fetch='one'))
-        else:
-            body = dict(user)
+        query_update = f"UPDATE dictionary.users SET token_expired_at = now() + interval '{TOKEN_LIVE_TIME}' WHERE phone = '{phone}'"
+        result_execute_db_query(query=query_update)
+        body = dict(result_execute_db_query(query=query, is_dict=True, fetch='one'))
         return {'body': body, 'code': None, 'message': None}

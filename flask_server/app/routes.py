@@ -37,16 +37,13 @@ def login_sms():
     return system_response(result=user.login_sms(phone))
 
 
-@flask_app.route("/login/sms_confirmation")
-@decorator_request
-def sms_confirmation():
-    sms_code = request.args['sms_code']
-    current_phone = request.args['phone']
-    return system_response(result=user.sms_confirmation(current_phone, sms_code))
-
-
 @flask_app.route("/login")
 @decorator_request
 def login():
-    phone = request.args['phone']
-    return system_response(result=user.login_user(phone))
+    sms_code = request.args['sms_code']
+    current_phone = request.args['phone']
+    confirmation_sms = user.sms_confirmation(current_phone, sms_code)
+    if confirmation_sms['code'] is None:
+        return system_response(result=user.login_user(current_phone))
+    else:
+        return system_response(result=confirmation_sms)

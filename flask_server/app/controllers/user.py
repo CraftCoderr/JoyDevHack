@@ -8,6 +8,7 @@ from flask_server.config.sys_params import TOKEN_LIVE_TIME
 
 import firebase_admin
 from firebase_admin import auth
+from firebase_admin import firestore
 import flask_server.app.controllers.firebase_controller
 
 
@@ -47,7 +48,8 @@ def login_sms(phone):
         # else:
         #     code = result['code'],
         #     message = result['message']
-        # body = SMS_ru_stub()
+        body = SMS_ru_stub()
+        body = result
     except Exception as e:
         code = type(e).__name__
         message = str(e)
@@ -69,8 +71,19 @@ def sms_confirmation(current_phone, sms_code):
 
 def login_user(phone, user_data=None):
     try:
-        new_user = auth.create_user(phone_number=f'+{phone}')
-        
+        new_user = auth.create_user(
+            phone_number=f'+{phone}'
+        )
+
+        # auth.cl client.collection.users
+        client = firestore.client()
+        collection = client.collection('users')
+        collection.add({
+            "avatarUrl": f'https://i.pravatar.cc/300?u={phone}',
+            "firstName": f"{phone}",
+            "lastName": ""
+        }, new_user.uid)
+
         query_insert = f"INSERT INTO dictionary.users (id, phone, token_expired_at) VALUES ('{new_user.uid}', '{phone}', now() + interval '{TOKEN_LIVE_TIME}');"
         result_execute_db_query(query=query_insert)
     except (firebase_admin.auth.PhoneNumberAlreadyExistsError, psycopg2.errors.UniqueViolation):

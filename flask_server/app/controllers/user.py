@@ -4,15 +4,11 @@ import psycopg2.errors
 from flask_server.app.database.pg_query_handler import result_execute_db_query
 from flask_server.config.sys_params import SMS_RU_API_KEY, SMS_HASH
 from flask_server.app.controllers.stubs import SMS_ru_stub
-from flask_server.app.tools.file_handler import get_json
+
 import firebase_admin
 from firebase_admin import auth
-from firebase_admin import credentials
+import flask_server.app.controllers.firebase_controller
 
-fr_conf = get_json(default_data=None,
-                   absolute_path="D:\\JoyDevHack\\flask_server\config\\firebase_credentials.json")
-cred = credentials.Certificate(fr_conf)
-firebase_admin.initialize_app(cred)
 
 def login_sms(phone):
     body = None

@@ -21,32 +21,32 @@ def login_sms(phone):
         fun_create_code_for_phone = "SELECT operations.sp_generate_code_for_phone('{}');".format(phone)
         result = result_execute_db_query(query=fun_create_code_for_phone, fetch='one')[0]
 
-        if ('sms_code' in result['body']) and ('sms_session' in result['body']):
-            sms_code = result['body']['sms_code']
-            session = result['body']['sms_session']
-            api_id = SMS_RU_API_KEY
-            hash = SMS_HASH
-            msg = '<#>\nВведите проверочный код: {}\n# {}\n{}'.format(sms_code, session, hash)
-
-            response = requests.get(
-                'https://sms.ru/sms/send',
-                params={
-                    'api_id': api_id,
-                    'to': phone,
-                    'msg': msg,
-                    'json': 1
-                }
-            )
-
-            body = json.loads(response.text)
-
-            for sms in body['sms'].values():
-                if sms['status'] != 'OK':
-                    code = sms['status_code']
-                    message = sms['status_text']
-        else:
-            code = result['code'],
-            message = result['message']
+        # if ('sms_code' in result['body']) and ('sms_session' in result['body']):
+        #     sms_code = result['body']['sms_code']
+        #     session = result['body']['sms_session']
+        #     api_id = SMS_RU_API_KEY
+        #     hash = SMS_HASH
+        #     msg = '<#>\nВведите проверочный код: {}\n# {}\n{}'.format(sms_code, session, hash)
+        #
+        #     response = requests.get(
+        #         'https://sms.ru/sms/send',
+        #         params={
+        #             'api_id': api_id,
+        #             'to': phone,
+        #             'msg': msg,
+        #             'json': 1
+        #         }
+        #     )
+        #
+        #     body = json.loads(response.text)
+        #
+        #     for sms in body['sms'].values():
+        #         if sms['status'] != 'OK':
+        #             code = sms['status_code']
+        #             message = sms['status_text']
+        # else:
+        #     code = result['code'],
+        #     message = result['message']
         # body = SMS_ru_stub()
     except Exception as e:
         code = type(e).__name__

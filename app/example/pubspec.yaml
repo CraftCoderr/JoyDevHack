@@ -44,7 +44,7 @@ dependencies:
   vibration: ^1.7.3
   sms_autofill: ^2.0.0
   translator: ^0.1.7
-  contact_picker: ^0.0.2
+  fluttercontactpicker: ^4.4.0
   smart_select:
     git:
       url: https://github.com/iktakahiro/flutter_smart_select.git

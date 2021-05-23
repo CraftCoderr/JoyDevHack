@@ -13,7 +13,7 @@ Future<types.User> fetchUser(String userId) async {
 /// Returns a list of [types.Room] created from Firebase query.
 /// If room has 2 participants, sets correct room name and image.
 Future<List<types.Room>> processRoomsQuery(
-  User firebaseUser,
+  types.User firebaseUser,
   QuerySnapshot query,
 ) async {
   final futures = query.docs.map((doc) async {
@@ -41,7 +41,7 @@ Future<List<types.Room>> processRoomsQuery(
     if (type == 'direct') {
       try {
         final otherUser = users.firstWhere(
-          (u) => u.id != firebaseUser.uid,
+          (u) => u.id != firebaseUser.id,
         );
 
         imageUrl = otherUser.avatarUrl;

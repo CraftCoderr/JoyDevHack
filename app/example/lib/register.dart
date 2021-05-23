@@ -64,7 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     var params = {'phone': _phoneNumber};
 
-    var uri = Uri.http('10.0.2.2:5000', '/login/sms', params);
+    var uri = Uri.http('city4live.ru:5000', '/login/sms', params);
     var response = await http.get(uri);
 
     var success = jsonDecode(response.body)['code'] == null;
@@ -83,7 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     var params = {'phone': _phoneNumber, 'sms_code': _verificationCode};
-    var uri = Uri.http('10.0.2.2:5000', '/login/sms_confirmation', params);
+    var uri = Uri.http('city4live.ru:5000', '/login/sms_confirmation', params);
     var response = await http.get(uri);
 
     var success = jsonDecode(response.body)['code'] == null;

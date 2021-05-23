@@ -11,7 +11,7 @@ import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:translator/translator.dart';
-import 'package:contact_picker/contact_picker.dart';
+import 'package:fluttercontactpicker/fluttercontactpicker.dart';
 
 class ChatPage extends StatefulWidget {
   ChatPage({
@@ -210,15 +210,11 @@ class _ChatPageState extends State<ChatPage> {
   _showContactsPicker() async {
     _setAttachmentUploading(true);
     try {
-      final _contactPicker = ContactPicker();
-      Contact contact = await _contactPicker.selectContact();
-      print(contact.toString());
+      final contact = await FlutterContactPicker.pickPhoneContact();
       final message = types.PartialText(
-          text: contact.fullName +
-              "\n" +
-              contact.phoneNumber.label +
-              ": " +
-              contact.phoneNumber.number);
+          text: (contact.fullName ?? '') + '\n' +
+              (contact.phoneNumber?.label ?? '') + ': ' +
+              (contact.phoneNumber?.number ?? ''));
       FirebaseChatCore.instance.sendMessage(
         message,
         widget.roomId,
@@ -253,7 +249,7 @@ class _ChatPageState extends State<ChatPage> {
             onPreviewDataFetched: _handlePreviewDataFetched,
             onSendPressed: _handleSendPressed,
             user: types.User(
-              id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
+              id: FirebaseChatCore.instance.firebaseUser?.id ?? '',
             ),
           );
         },
